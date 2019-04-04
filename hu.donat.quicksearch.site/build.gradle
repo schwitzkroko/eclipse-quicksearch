@@ -4,9 +4,10 @@ plugins {
 
 dependencies {
    localPlugin project(':hu.donat.quicksearch')
-   localPlugin project(':hu.donat.quicksearch.feature')
+   localFeature project(':hu.donat.quicksearch.feature')   
 }
 
 updateSite {
    siteDescriptor = file('category.xml')
+   extraResources = files('p2.index')
 }
