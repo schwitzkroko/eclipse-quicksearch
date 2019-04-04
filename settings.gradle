@@ -1,14 +1,14 @@
 pluginManagement {
    repositories {
-      mavenLocal()
-//      maven {
-//         url gradleRepositoryUrl
-//      }
+      // mavenLocal()
+      maven {
+         url 'https://dl.bintray.com/schwitzkroko/test/'
+      }
       jcenter()
    }
    resolutionStrategy.eachPlugin {
       if (requested.id.namespace == 'org.eclipse.buildship.build') {
-         useModule('org.eclipse.buildship.build:gradle-eclipsebuild:1.0.0-SNAPSHOT')
+         useModule('org.eclipse.buildship.build:gradle-eclipsebuild:0.0.9')
       }
    }
 }
