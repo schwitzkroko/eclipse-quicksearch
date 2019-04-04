@@ -1,5 +1,9 @@
 # Eclipse quicksearch plugin
 
+## Status
+
+Fork created for testing '''gradle-eclipsebuild''' on this plugin project.
+
 ## Project overview
 
 ![Screencast](docs/resources/screencast.gif)

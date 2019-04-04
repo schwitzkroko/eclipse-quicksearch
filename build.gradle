@@ -1,0 +1,100 @@
+plugins {
+   id 'org.eclipse.buildship.build.build-definition-plugin'
+   id 'eclipse'
+}
+
+wrapper {
+   distributionUrl = "https://services.gradle.org/distributions/gradle-5.2.1-bin.zip"
+}
+
+// ext.baseVersion = '1.0.0-SNAPSHOT'
+// ext.versionQualifier = getVersionQualifier()
+version = getP2Version '1.0.0-SNAPSHOT'
+
+eclipseBuild {
+   defaultEclipseVersion = '411'
+
+   final def swtPluginId = "org.eclipse.swt.${ECLIPSE_WS}.${ECLIPSE_OS}.${ECLIPSE_ARCH}"
+   
+   def eclipseVersionAgnosticDependencies = [
+      'com.google.guava'                      : '21.0.0',
+  ]
+
+   targetPlatform {
+      eclipseVersion = '411'
+      targetDefinition = file('tooling-e411.target')
+      versionMapping = [
+         "$swtPluginId"                          : '3.110.0',
+         'com.ibm.icu'                           : '63.1.0',
+         'org.eclipse.core.expressions'          : '3.6.200',
+         'org.eclipse.core.filesystem'           : '1.7.200',
+         'org.eclipse.core.net'                  : '1.3.400',
+         'org.eclipse.core.resources'            : '3.13.200',
+         'org.eclipse.core.runtime'              : '3.15.100',
+         'org.eclipse.core.variables'            : '3.4.300',
+         'org.eclipse.debug.core'                : '3.13.200',
+         'org.eclipse.debug.ui'                  : '3.13.300',
+         'org.eclipse.help'                      : '3.8.200',
+         'org.eclipse.jdt.core'                  : '3.17.0',
+         'org.eclipse.jdt.junit.core'            : '3.10.200',
+         'org.eclipse.jdt.launching'             : '3.12.100',
+         'org.eclipse.jdt.ui'                    : '3.16.100',
+         'org.eclipse.jface.databinding'         : '1.8.400',
+         'org.eclipse.jface.text'                : '3.15.0',
+         'org.eclipse.ui'                        : '3.112.0',
+         'org.eclipse.ui.console'                : '3.8.300',
+         'org.eclipse.ui.editors'                : '3.11.300',
+         'org.eclipse.ui.ide'                    : '3.14.300',
+         'org.eclipse.ui.navigator'              : '3.7.300',
+         'org.eclipse.ui.views'                  : '3.9.300',
+         'org.eclipse.ui.workbench.texteditor'   : '3.11.200',
+         'org.junit'                             : '4.12.0'
+      ] + eclipseVersionAgnosticDependencies
+   }
+}
+
+import org.gradle.internal.os.OperatingSystem
+
+tasks.withType(eclipsebuild.DownloadEclipseSdkTask) {
+   def os = org.gradle.internal.os.OperatingSystem.current()
+   def mirrorBaseUrl = "http://archive.eclipse.org/eclipse/downloads/drops4/R-4.4.2-201502041700"
+   if (os.windows) {
+       downloadUrl = "${mirrorBaseUrl}/eclipse-SDK-4.4.2-win32-x86_64.zip"
+   } else if (os.macOsX) {
+       downloadUrl = "${mirrorBaseUrl}/eclipse-SDK-4.4.2-linux-gtk-x86_64.tar.gz"
+   } else if (os.linux) {
+       downloadUrl = "${mirrorBaseUrl}/eclipse-SDK-4.4.2-macosx-cocoa-x86_64.tar.gz"
+   }
+   logger.debug("sdk url selected: ${downloadUrl}")
+}
+
+subprojects {
+
+   version = rootProject.version
+
+   apply plugin: 'eclipse'
+
+    plugins.withType(JavaPlugin) {
+      sourceCompatibility = 1.8
+      targetCompatibility = 1.8
+   }
+
+   repositories {
+      maven {
+         name = 'mavenized-target-platform'
+         url "${eclipsebuild.Config.on(project).mavenizedTargetPlatformDir}"
+      }
+   }
+}
+
+eclipse {
+   project {
+      name = 'hu.donat.quicksearch.ROOT'
+   }
+}
+
+def getP2Version(String mavenVersion) {
+   def toks = mavenVersion.tokenize('-')
+   def suffix = toks[1].equals('SNAPSHOT') ? '-s' : ''
+   toks[0] + '.' + 'v' + new Date().format('yyyyMMdd', TimeZone.getTimeZone('GMT')) + suffix
+}

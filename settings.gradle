@@ -1,0 +1,20 @@
+pluginManagement {
+   repositories {
+      mavenLocal()
+//      maven {
+//         url gradleRepositoryUrl
+//      }
+      jcenter()
+   }
+   resolutionStrategy.eachPlugin {
+      if (requested.id.namespace == 'org.eclipse.buildship.build') {
+         useModule('org.eclipse.buildship.build:gradle-eclipsebuild:1.0.0-SNAPSHOT')
+      }
+   }
+}
+
+rootProject.name = 'eclipse-quicksearch'
+
+include ':hu.donat.quicksearch'
+include ':hu.donat.quicksearch.feature'
+include ':hu.donat.quicksearch.site'
